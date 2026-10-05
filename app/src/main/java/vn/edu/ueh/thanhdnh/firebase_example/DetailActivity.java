@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.squareup.picasso.Picasso;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -30,28 +31,24 @@ public class DetailActivity extends AppCompatActivity {
         // Nút Back đóng Activity
         btnBack.setOnClickListener(v -> finish());
 
-        // Nhận dữ liệu truyền từ RecyclerView qua Intent
-        Article article = (Article) getIntent().getSerializableExtra("article_item");
+        Article article = (Article) getIntent()
+                .getSerializableExtra("article_item");
+
         if (article != null) {
+            // Hiển thị chữ
             txtTitle.setText(article.getTitle());
             txtContent.setText(article.getContent());
             txtView.setText("Views: " + article.getView());
 
-            String imageName = article.getImg_cover();
-            if (imageName != null && !imageName.trim().isEmpty()) {
-                int resId = getResources().getIdentifier(
-                        imageName.trim().toLowerCase(),
-                        "drawable",
-                        getPackageName()
-                );
-                if (resId != 0) {
-                    imgCover.setImageResource(resId);
-                } else {
-                    imgCover.setImageResource(android.R.drawable.ic_menu_gallery);
-                }
-            } else {
-                imgCover.setImageResource(android.R.drawable.ic_menu_gallery);
-            }
+            // Hiển thị ảnh
+            String url = article.getImg_cover();
+
+            Picasso.get()
+                    .load(url == null || url.trim().isEmpty()
+                            ? null : url.trim())
+                    .placeholder(android.R.drawable.ic_menu_gallery)
+                    .error(android.R.drawable.ic_menu_gallery)
+                    .into(imgCover);
         }
     }
 }

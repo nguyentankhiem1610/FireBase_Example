@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -34,30 +35,26 @@ public class ArticleViewAdapter extends RecyclerView.Adapter<ArticleViewHolder> 
   }
 
   @Override
-  public void onBindViewHolder(@NonNull ArticleViewHolder holder, int position) {
-    Article currentArticle = articles.get(position);
+  public void onBindViewHolder(
+          @NonNull ArticleViewHolder holder,
+          int position
+  ) {
+    Article article = articles.get(position);
 
-    holder.getTxtTitle().setText(currentArticle.getTitle());
-    holder.getTxtContent().setText(currentArticle.getContent());
-    holder.getTxtView().setText("Views: " + currentArticle.getView());
+    holder.getTxtTitle().setText(article.getTitle());
+    holder.getTxtContent().setText(article.getContent());
+    holder.getTxtView().setText("Views: " + article.getView());
 
-    // Xử lý lấy ảnh từ res/drawable bằng tên file lưu trên Firebase
-    String imageName = currentArticle.getImg_cover();
-    if (imageName != null && !imageName.trim().isEmpty()) {
-      // Tìm resource ID dựa trên tên chuỗi (loại bỏ đuôi file và khoảng trắng)
-      String cleanImageName = imageName.trim().toLowerCase();
-      int resId = context.getResources().getIdentifier(cleanImageName, "drawable", context.getPackageName());
+    String imageUrl = article.getImg_cover();
 
-      if (resId != 0) {
-        // Tìm thấy ảnh trong drawable
-        holder.getImgCover().setImageResource(resId);
-      } else {
-        // Tên file không khớp thì hiện icon mặc định
-        holder.getImgCover().setImageResource(android.R.drawable.ic_menu_gallery);
-      }
-    } else {
-      holder.getImgCover().setImageResource(android.R.drawable.ic_menu_gallery);
-    }
+    Picasso.get()
+            .load(imageUrl == null || imageUrl.trim().isEmpty()
+                    ? null : imageUrl.trim())
+            .placeholder(android.R.drawable.ic_menu_gallery)
+            .error(android.R.drawable.ic_menu_gallery)
+            .resize(300, 300)
+            .centerCrop()
+            .into(holder.getImgCover());
   }
 
   @Override
